@@ -30,7 +30,7 @@ class DataRecordUI(QWidget):
     def __init__(self):
         super(DataRecordUI, self).__init__()
         loadUi('./ui/DataRecord.ui', self)  # 读取UI布局
-        self.setWindowIcon(QIcon('./icons/icon.png'))
+        self.setWindowIcon(QIcon('./pics/1.png'))
         self.setFixedSize(1528, 856)
 
         # open cv 摄像头
@@ -58,7 +58,7 @@ class DataRecordUI(QWidget):
         # 数据库
         self.datasets = './datasets'
         self.isDbReady = False
-        self.initDbButton.setIcon(QIcon('./icons/warning.png'))
+        self.initDbButton.setIcon(QIcon('./pics/warning.png'))
         self.initDbButton.clicked.connect(self.initDb)
 
         # 用户信息
@@ -132,7 +132,7 @@ class DataRecordUI(QWidget):
             self.migrateToDbButton.setEnabled(True)  # 允许提交至数据库
             self.isFaceDataReady = True
         else:
-            self.ImportPersonButton.setIcon(QIcon('./icons/error.png'))
+            self.ImportPersonButton.setIcon(QIcon('./pics/error.png'))
             self.ImportPersonButton.setChecked(False)
             self.logQueue.put('Error：操作失败，系统未检测到有效的用户信息')
 
@@ -153,12 +153,12 @@ class DataRecordUI(QWidget):
                     row_data = sheet.row_values(row)
                     if row_data[1] == '姓名':
                         continue
-                    self.userInfo['stu_id'] = row_data[4]
-                    self.userInfo['cn_name'] = row_data[1]
-                    self.userInfo['stu_sex'] = row_data[5]
-                    self.userInfo['major'] = row_data[2]
+                    self.userInfo['stu_id'] = row_data[1]
+                    self.userInfo['cn_name'] = row_data[2]
+                    self.userInfo['stu_sex'] = row_data[3]
+                    self.userInfo['major'] = row_data[4]
                     try:
-                        stu_id = row_data[4]
+                        stu_id = row_data[1]
                         if not os.path.exists('{}/stu_{}'.format(self.datasets, stu_id)):
                             os.makedirs('{}/stu_{}'.format(self.datasets, stu_id))
                         db_user_count = self.commit_to_database(cursor)
@@ -188,7 +188,7 @@ class DataRecordUI(QWidget):
                 self.isFaceDataReady = True
 
         else:
-            self.ImportPersonButton.setIcon(QIcon('./icons/error.png'))
+            self.ImportPersonButton.setIcon(QIcon('./pics/error.png'))
             self.ImportPersonButton.setChecked(False)
             self.logQueue.put('Error：操作失败，系统未检测到有效的用户信息')
 
@@ -233,12 +233,12 @@ class DataRecordUI(QWidget):
                     logging.error('无法调用电脑摄像头{}'.format(camID))
                     self.logQueue.put('Error：初始化摄像头失败')
                     self.cap.release()
-                    self.startWebcamButton.setIcon(QIcon('./icons/error.png'))
+                    self.startWebcamButton.setIcon(QIcon('./pics/error.png'))
                     self.startWebcamButton.setChecked(False)
                 else:
                     self.timer.start(5)
                     self.enableFaceDetectButton.setEnabled(True)
-                    self.startWebcamButton.setIcon(QIcon('./icons/success.png'))
+                    self.startWebcamButton.setIcon(QIcon('./pics/success.png'))
                     self.startWebcamButton.setText('关闭摄像头')
         else:
             if self.cap.isOpened():
@@ -275,14 +275,14 @@ class DataRecordUI(QWidget):
                     if not self.enableFaceRecordButton.isEnabled():  # 启用单帧采集按钮
                         self.enableFaceRecordButton.setEnabled(True)
                     self.enableFaceRecordButton.setIcon(QIcon())
-                    self.startFaceRecordButton.setIcon(QIcon('./icons/success.png'))
+                    self.startFaceRecordButton.setIcon(QIcon('./pics/success.png'))
                     self.startFaceRecordButton.setText('结束当前人脸采集')  # 开始采集按钮状态修改为结束采集
                 else:
-                    self.startFaceRecordButton.setIcon(QIcon('./icons/error.png'))
+                    self.startFaceRecordButton.setIcon(QIcon('./picss/error.png'))
                     self.startFaceRecordButton.setChecked(False)
                     self.logQueue.put('Error：操作失败，系统未检测到有效的用户信息')
             else:
-                self.startFaceRecordButton.setIcon(QIcon('./icons/error.png'))
+                self.startFaceRecordButton.setIcon(QIcon('./pics/error.png'))
                 self.logQueue.put('Error：操作失败，请开启人脸检测')
         else:  # 根据按钮文本信息判断是结束采集还是开始采集
             if self.faceRecordCount < self.minFaceRecordCount:
@@ -338,14 +338,14 @@ class DataRecordUI(QWidget):
                     self.isFaceRecordEnabled = False
                     logging.error('检测到多张人脸或环境干扰')
                     self.logQueue.put('Warning：检测到多张人脸或环境干扰，请解决问题后继续')
-                    self.enableFaceRecordButton.setIcon(QIcon('./icons/warning.png'))
+                    self.enableFaceRecordButton.setIcon(QIcon('./pics/warning.png'))
                     continue
                 except Exception as e:
                     logging.error('写入人脸图像文件到计算机过程中发生异常')
-                    self.enableFaceRecordButton.setIcon(QIcon('./icons/error.png'))
+                    self.enableFaceRecordButton.setIcon(QIcon('./pics/error.png'))
                     self.logQueue.put('Error：无法保存人脸图像，采集当前捕获帧失败')
                 else:
-                    self.enableFaceRecordButton.setIcon(QIcon('./icons/success.png'))
+                    self.enableFaceRecordButton.setIcon(QIcon('./pics/success.png'))
                     self.faceRecordCount = self.faceRecordCount + 1
                     self.isFaceRecordEnabled = False  # 单帧拍摄完成后马上关闭
                     self.faceRecordCountLcdNum.display(self.faceRecordCount)  # 更新采集数量
@@ -410,14 +410,14 @@ class DataRecordUI(QWidget):
         except Exception as e:
             logging.error('读取数据库异常，无法完成数据库初始化')
             self.isDbReady = False
-            self.initDbButton.setIcon(QIcon('./icons/error.png'))
+            self.initDbButton.setIcon(QIcon('./pics/error.png'))
             self.logQueue.put('Error：初始化数据库失败')
             print(e)
         else:
             self.isDbReady = True
             self.dbUserCountLcdNum.display(db_user_count)
             self.logQueue.put('Success：数据库初始化完成')
-            self.initDbButton.setIcon(QIcon('./icons/success.png'))
+            self.initDbButton.setIcon(QIcon('./pics/success.png'))
             self.initDbButton.setEnabled(False)
             self.addOrUpdateUserInfoButton.setEnabled(True)
             self.ExcelpathButton.setEnabled(True)
@@ -543,7 +543,7 @@ class DataRecordUI(QWidget):
                 self.cnNameLineEdit.clear()
                 self.MajorLineEdit.clear()
                 self.SexLineEdit.clear()
-                self.migrateToDbButton.setIcon(QIcon('./icons/success.png'))
+                self.migrateToDbButton.setIcon(QIcon('./pics/success.png'))
                 # 允许继续增加新用户
                 self.addOrUpdateUserInfoButton.setEnabled(True)
                 self.migrateToDbButton.setEnabled(False)
@@ -553,7 +553,7 @@ class DataRecordUI(QWidget):
                 conn.close()
         else:
             self.logQueue.put('Error：操作失败，你尚未完成人脸数据采集')
-            self.migrateToDbButton.setIcon(QIcon('./icons/error.png'))
+            self.migrateToDbButton.setIcon(QIcon('./pics/error.png'))
 
     @staticmethod
     def message_output(log):
@@ -565,7 +565,7 @@ class DataRecordUI(QWidget):
     @staticmethod
     def callDialog(icon, text, informativeText, standardButtons, defaultButton=None):
         msg = QMessageBox()
-        msg.setWindowIcon(QIcon('./icons/icon.png'))
+        msg.setWindowIcon(QIcon('./pics/icon.png'))
         msg.setWindowTitle('OpenCV Face Recognition System - DataRecord')
         msg.setIcon(icon)
         msg.setText(text)  # 对话框文本信息
@@ -589,11 +589,11 @@ class UserInfoDialog(QDialog):
     def __init__(self):
         super(UserInfoDialog, self).__init__()
         loadUi('./ui/UserInfoDialog.ui', self)  # 读取UI布局
-        self.setWindowIcon(QIcon('./icons/icon.png'))
+        self.setWindowIcon(QIcon('./pics/1.png'))
         self.setFixedSize(613, 593)
 
         # 使用正则表达式限制用户输入
-        stu_id_regx = QRegExp('^[0-9]{10}$')  # 10位学号，如1604010901
+        stu_id_regx = QRegExp('^[0-11]{12}$')  # 12位学号
         stu_id_validator = QRegExpValidator(stu_id_regx, self.stuIDLineEdit)
         self.stuIDLineEdit.setValidator(stu_id_validator)
 
