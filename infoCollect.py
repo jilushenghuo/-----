@@ -32,12 +32,8 @@ class DataRecordUI(QWidget):
         loadUi('./ui/DataRecord.ui', self)  # 读取UI布局
         self.setWindowIcon(QIcon('./pics/1.png'))
         self.setFixedSize(1528, 856)
-
         # open cv 摄像头
         self.cap = cv2.VideoCapture()
-        # 分类器
-        self.faceCascade = cv2.CascadeClassifier('./haarcascades/haarcascade_frontalface_default.xml')
-
         # 图像捕获
         self.isExternalCameraUsed = False
         self.useExternalCameraCheckBox.stateChanged.connect(
@@ -45,7 +41,6 @@ class DataRecordUI(QWidget):
 
         self.startWebcamButton.toggled.connect(self.startWebcam)
         self.startWebcamButton.setCheckable(True)
-
         # 定时器
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateFrame)
@@ -151,7 +146,7 @@ class DataRecordUI(QWidget):
                 self.logQueue.put("正在读取文件：" + str(path) + "的第" + str(index) + "个sheet表的内容...")
                 for row in range(sheet.nrows):
                     row_data = sheet.row_values(row)
-                    if row_data[1] == '姓名':
+                    if row_data[2] == '姓名':
                         continue
                     self.userInfo['stu_id'] = row_data[1]
                     self.userInfo['cn_name'] = row_data[2]
@@ -268,7 +263,7 @@ class DataRecordUI(QWidget):
 
     # 开始/结束采集人脸数据
     def startFaceRecord(self, startFaceRecordButton):
-        if startFaceRecordButton.text() == '开始采集人脸数据':  # 只能用==判断，不能用is
+        if startFaceRecordButton.text() == '开始采集人脸数据':  
             if self.isFaceDetectEnabled:
                 if self.isUserInfoReady:  # 学生信息确认
                     self.addOrUpdateUserInfoButton.setEnabled(False)  # 采集人脸数据时禁用修改学生信息
@@ -310,7 +305,6 @@ class DataRecordUI(QWidget):
     def updateFrame(self):
         ret, frame = self.cap.read()
         if ret:
-            # self.displayImage(frame)  # ？两次输出？
             if self.isFaceDetectEnabled:  # 人脸检测
                 detected_frame = self.detectFace(frame)
                 self.displayImage(detected_frame)
@@ -333,7 +327,7 @@ class DataRecordUI(QWidget):
                         raise RecordDisturbance
 
                     cv2.imwrite('{}/stu_{}/img.{}.jpg'.format(self.datasets, stu_id, self.faceRecordCount + 1),
-                                frame[y - 20:y + h + 20, x - 20:x + w + 20])  # 灰度图的人脸区域
+                                frame[y - 20:y + h + 20, x - 20:x + w + 20])  
                 except RecordDisturbance:
                     self.isFaceRecordEnabled = False
                     logging.error('检测到多张人脸或环境干扰')
@@ -349,7 +343,7 @@ class DataRecordUI(QWidget):
                     self.faceRecordCount = self.faceRecordCount + 1
                     self.isFaceRecordEnabled = False  # 单帧拍摄完成后马上关闭
                     self.faceRecordCountLcdNum.display(self.faceRecordCount)  # 更新采集数量
-            cv2.rectangle(frame, (x - 5, y - 10), (x + w + 5, y + h + 10), (0, 0, 255), 2)  # 红色追踪框
+            cv2.rectangle(frame, (x - 5, y - 10), (x + w + 5, y + h + 10), (0, 0, 255), 2) 
         return frame
 
     # 显示图像
@@ -362,8 +356,6 @@ class DataRecordUI(QWidget):
 
         if len(img.shape) == 3:  # rows[0], cols[1], channels[2]
             if img.shape[2] == 4:
-                # The image is stored using a 32-bit byte-ordered RGBA format (8-8-8-8)
-                # A: alpha channel，不透明度参数。如果一个像素的alpha通道数值为0%，那它就是完全透明的
                 qformat = QImage.Format_RGBA8888
             else:
                 qformat = QImage.Format_RGB888
@@ -610,7 +602,7 @@ class UserInfoDialog(QDialog):
         self.SexLineEdit.setValidator(sex_validator)
 
 if __name__ == '__main__':
-    logging.config.fileConfig('./config/logging.cfg')
+    logging.config.fileConfig('./logging.cfg')
     app = QApplication(sys.argv)
     window = DataRecordUI()
     window.show()
