@@ -171,7 +171,7 @@ class DataRecordUI(QWidget):
     def person_import_thread(self):
         if self.isUserInfoReady:  # 学生信息确认
             stu_id = self.userInfo.get('stu_id')
-            self.ImportPersonButton.setIcon(QIcon('./icons/success.png'))
+            self.ImportPersonButton.setIcon(QIcon('./pics/success.png'))
             image_paths = QFileDialog.getOpenFileNames(self, '选择图片',
                                                        "./",
                                                        'JEPG files(*.jpg);;PNG files(*.PNG)')
@@ -313,8 +313,8 @@ class DataRecordUI(QWidget):
 
     # 检测人脸
     def detectFace(self, frame):
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # 灰度图
-        faces = self.faceCascade.detectMultiScale(gray, 1.3, 5, minSize=(90, 90))  # 分类器侦测人脸
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) 
+        faces = self.faceCascade.detectMultiScale(gray, 1.3, 5, minSize=(90, 90))  
         stu_id = self.userInfo.get('stu_id')
 
         #  遍历所有人脸，只允许有一个人的脸
@@ -515,7 +515,7 @@ class DataRecordUI(QWidget):
             except Exception as e:
                 print(e)
                 logging.error('读写数据库异常，无法向数据库插入/更新记录')
-                self.migrateToDbButton.setIcon(QIcon('./icons/error.png'))
+                self.migrateToDbButton.setIcon(QIcon('./pics/error.png'))
                 self.logQueue.put('Error：读写数据库异常，同步失败')
             else:
                 text = '<font color=blue>{}</font> 已添加/更新到数据库。'.format(stu_id)
@@ -558,7 +558,7 @@ class DataRecordUI(QWidget):
     def callDialog(icon, text, informativeText, standardButtons, defaultButton=None):
         msg = QMessageBox()
         msg.setWindowIcon(QIcon('./pics/icon.png'))
-        msg.setWindowTitle('OpenCV Face Recognition System - DataRecord')
+        msg.setWindowTitle('Face Recognition System - infoCollect')
         msg.setIcon(icon)
         msg.setText(text)  # 对话框文本信息
         msg.setInformativeText(informativeText)  # 对话框详细信息
