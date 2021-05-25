@@ -74,6 +74,12 @@ class DataRecordUI(QWidget):
         self.isFaceRecordEnabled = False
         self.enableFaceRecordButton.clicked.connect(self.enableFaceRecord)  # 按键绑定录入单帧图像
 
+        self.receiveLogSignal.connect(lambda log: self.logOutput(log)) 
+        self.messagebox_signal.connect(lambda log: self.message_output(log))
+        self.logOutputThread = threading.Thread(target=self.receiveLog, daemon=True)
+        self.logOutputThread.start()
+
+        
         # 批量导入
         self.isImage_path_ready = False
         self.ImagepathButton.clicked.connect(self.import_image_thread)
